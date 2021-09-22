@@ -11,7 +11,7 @@
 
 	<body>
 		<div id="rooter" class="cover-container w-100 d-flex h-100 p-3 mx-auto flex-column">
-			<!-- NAV BAR -->
+			<!-- NAV BAR CONTAINER-->
 			<header class="masthead mb-auto">
 				<div class="inner">
 					<h3 class="masthead-brand">CookUni</h3>
@@ -19,7 +19,7 @@
 				</div>
 			</header>
 
-			<!-- STATUS NOTIFICATIONS -->
+			<!-- STATUS NOTIFICATIONS CONTAINER -->
 			<div id="notifications">
 				<div id="successBox" class="alert alert-success" role="alert">{Success Message...}</div>
 				<div id="loadingBox" class="alert alert-info" role="alert">Loading...</div>
@@ -29,7 +29,7 @@
 			<!-- DISPLAY CONTAINER -->
 			<div id="container"></div>
 
-			<!-- FOOTER -->
+			<!-- FOOTER CONTAINER -->
 			<footer class="mastfoot mt-5 text-center text-light">
 				<div class="inner">
 					<p>Made with &hearts; by <a href="#/home">CookUni</a>.</p>
@@ -40,25 +40,14 @@
 			<!-- NAV BAR - TEMPLATE -->
 			<script id="navbar" type="text/x-handlebars-template">
 				<a id="nav-home" class="nav-link" href="#home">Home</a>
-				<a id="nav-welcome" class="nav-link active" href="#home" style="display: none">Welcome,
+				<a id="nav-welcome" class="nav-link active" href="#home">Welcome,
 					{{firstName}}
 					{{lastName}}!</a>
-				<a id="nav-share" class="nav-link active" href="#share" style="display: none">Share recipe</a>
-				<a id="nav-logout" class="nav-link active" href="#logout" style="display: none">Logout</a>
-				<a id="nav-login" class="nav-link anon" href="#login" style="display: none">Login</a>
-				<a id="nav-register" class="nav-link anon" href="#register" style="display: none">Register</a>
+				<a id="nav-share" class="nav-link active" href="#share">Share recipe</a>
+				<a id="nav-logout" class="nav-link active" href="#logout">Logout</a>
+				<a id="nav-login" class="nav-link anon" href="#login">Login</a>
+				<a id="nav-register" class="nav-link anon" href="#register">Register</a>
 			</script>
-			<!-- <script id="active-nav" type="text/x-handlebars-template">
-				<a class="nav-link" href="#home">Home</a>
-				<a class="nav-link active" href="#welcome">Welcome, {{firstName}} {{lastName}}!</a>
-				<a class="nav-link active" href="#share">Share recipe</a>
-				<a class="nav-link active" href="#logout">Logout</a>
-			</script>
-			<script id="anon-nav" type="text/x-handlebars-template">
-				<a class="nav-link" href="#home">Home</a>
-				<a class="nav-link anon" href="#login">Login</a>
-				<a class="nav-link anon" href="#register">Register</a>
-			</script> -->
 
 			<!-- ANONYMOUS HOME PAGE - TEMPLATE -->
 			<script id="anon-home" type="text/x-handlebars-template">
@@ -74,192 +63,45 @@
 			<script id="home" type="text/x-handlebars-template">
 				<h1 class="text-center">Our Recipes</h1>
 
-				<!-- LOGGED IN: NO RECIPES -->
-				<div id="foodNotFound">
-					<img
-						src="https://t4.ftcdn.net/jpg/00/62/17/31/240_F_62173114_ozantkVtkPgzL0fxssAkTqKX1FHPr0UW.jpg"
-					/>
-					<h3>Food not found...</h3>
-				</div>
-
-				<!-- LOGGED IN: WITH RECIPES PAGE -->
 				<div id="sharedRecipes">
-					<!-- recipe container -->
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="our-team-main">
-									<div class="team-front">
-										<img
-											src="https://cdn.pixabay.com/photo/2017/10/09/19/29/eat-2834549__340.jpg"
-										/>
-										<h3>Meal: {{meal}}</h3>
-										<p>Vegetables and legumes/beans CATEGORY</p>
-									</div>
-
-									<div class="team-back">
-										<div class="back-side-info">
-											<h4>Ingredients</h4>
-											<ul>
-												<li>First ingredients</li>
-												<li>Second ingredients</li>
-												<li>Third ingredients</li>
-												<li>...</li>
-											</ul>
-											<a href="/#">View the recepie</a>
+					<!-- Recipe Card Template -->
+					{{#each recipesArr}}
+						<div class="container">
+							<div class="row">
+								<div class="col-lg-12">
+									<div class="our-team-main">
+										<div class="team-front">
+											<img src="{{categoryImageURL}}" />
+											<h3>{{meal}}</h3>
+											<p>{{category}}</p>
 										</div>
 
-										<img
-											class="foodImage"
-											src="https://t3.ftcdn.net/jpg/00/25/90/48/240_F_25904887_fhZJ692ukng3vQxzHldvuN981OiYVlJ1.jpg"
-										/>
+										<div class="team-back">
+											<div class="back-side-info">
+												<h4>Ingredients</h4>
+												<ul>
+													{{#each this.ingredients}}
+														<li>{{this}}</li>
+													{{/each}}
+												</ul>
+												<a href="#view/{{id}}">View the recipe</a>
+											</div>
+
+											<img class="foodImage" src="{{foodImageURL}}" />
+										</div>
 									</div>
 								</div>
 							</div>
 						</div>
-					</div>
-
-					<div class="container">
-						<div class="row">
-							<!--Grain-Food-Template-->
-							<div class="col-lg-12">
-								<div class="our-team-main">
-									<div class="team-front">
-										<img
-											src="https://cdn.pixabay.com/photo/2014/12/11/02/55/corn-syrup-563796__340.jpg"
-										/>
-										<h3>Meal Name</h3>
-										<p>Grain Food CATEGORY</p>
-									</div>
-
-									<div class="team-back">
-										<div class="back-side-info">
-											<h4>Ingredients</h4>
-											<ul>
-												<li>First ingredients</li>
-												<li>Second ingredients</li>
-												<li>Third ingredients</li>
-												<li>...</li>
-											</ul>
-											<a href="/#">View the recepie</a>
-										</div>
-
-										<img
-											class="foodImage"
-											src="https://cdn.pixabay.com/photo/2017/12/09/08/18/pizza-3007395__340.jpg"
-											width:
-											150;
-											height:
-											auto;
-										/>
-									</div>
-								</div>
-							</div>
-							<!--Food-Template-->
+					{{else}}
+						<!-- No Recipes Template -->
+						<div id="foodNotFound">
+							<img
+								src="https://t4.ftcdn.net/jpg/00/62/17/31/240_F_62173114_ozantkVtkPgzL0fxssAkTqKX1FHPr0UW.jpg"
+							/>
+							<h3>Food not found...</h3>
 						</div>
-					</div>
-
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="our-team-main">
-									<div class="team-front">
-										<img
-											src="https://cdn.pixabay.com/photo/2017/06/02/18/24/fruit-2367029__340.jpg"
-										/>
-										<h3>Meal Name</h3>
-										<p>Fruits CATEGORY</p>
-									</div>
-
-									<div class="team-back">
-										<div class="back-side-info">
-											<h4>Ingredients</h4>
-											<ul>
-												<li>First ingredients</li>
-												<li>Second ingredients</li>
-												<li>Third ingredients</li>
-												<li>...</li>
-											</ul>
-											<a href="/#">View the recepie</a>
-										</div>
-
-										<img
-											class="foodImage"
-											src="https://t3.ftcdn.net/jpg/00/87/05/06/240_F_87050645_NGkJwdXlikO6DWOppUu93fQwLYeBdDEq.jpg"
-										/>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="our-team-main">
-									<div class="team-front">
-										<img
-											src="https://image.shutterstock.com/image-photo/assorted-dairy-products-milk-yogurt-260nw-530162824.jpg"
-										/>
-										<h3>Meal Name</h3>
-										<p>Milk, chees, eggs and alternatives CATEGORY</p>
-									</div>
-
-									<div class="team-back">
-										<div class="back-side-info">
-											<h4>Ingredients</h4>
-											<ul>
-												<li>First ingredients</li>
-												<li>Second ingredients</li>
-												<li>Third ingredients</li>
-												<li>...</li>
-											</ul>
-											<a href="/#">View the recepie</a>
-										</div>
-
-										<img
-											class="foodImage"
-											src="https://cdn.pixabay.com/photo/2018/01/06/16/24/fried-3065319__340.jpg"
-										/>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12">
-								<div class="our-team-main">
-									<div class="team-front">
-										<img
-											src="https://t3.ftcdn.net/jpg/01/18/84/52/240_F_118845283_n9uWnb81tg8cG7Rf9y3McWT1DT1ZKTDx.jpg"
-										/>
-										<h3>Meal Name</h3>
-										<p>Lean meats and poultry, fish... CATEGORY</p>
-									</div>
-
-									<div class="team-back">
-										<div class="back-side-info">
-											<h4>Ingredients</h4>
-											<ul>
-												<li>First ingredients</li>
-												<li>Second ingredients</li>
-												<li>Third ingredients</li>
-												<li>...</li>
-											</ul>
-											<a href="/#">View the recepie</a>
-										</div>
-
-										<img
-											class="foodImage"
-											src="https://image.shutterstock.com/image-photo/roasted-dorado-fish-brussels-sprouts-260nw-435521527.jpg"
-										/>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+					{{/each}}
 				</div>
 			</script>
 
@@ -269,33 +111,29 @@
 					<div class="col-md-12">
 						<div class="recepieInfo">
 							<div class="detailsFoodImage">
-								<img
-									src="https://t3.ftcdn.net/jpg/00/25/90/48/240_F_25904887_fhZJ692ukng3vQxzHldvuN981OiYVlJ1.jpg"
-									alt=""
-								/>
+								<img src="{{foodImageURL}}" alt="" />
 							</div>
 
 							<div class="infoPack">
-								<h3 class="my-3">Meal Name</h3>
-								<p class="prep-method">Method of preparation...</p>
-								<p class="description">Description ...</p>
+								<h3 class="my-3">{{meal}}</h3>
+								<p class="prep-method">{{prepMethod}}</p>
+								<p class="description">{{description}}</p>
 							</div>
 							<div class="actions">
 								<!-- CREATOR VIEW -->
-								<a class="btn btn-danger" href="#">Archive</a>
-								<a class="btn btn-info" href="#">Edit</a>
+								<a class="btn btn-danger" href="#archive/{{id}}">Archive</a>
+								<a class="btn btn-info" href="#edit/{{id}}">Edit</a>
 								<!-- NON-CREATOR VIEW -->
-								<a class="btn btn-success" href="#"> 900 likes</a>
+								<a class="btn btn-success" href="#"> {{likesCounter}} likes</a>
 							</div>
 						</div>
 
 						<div class="detailsIngredients">
 							<h3 class="my-3 ingredient">Ingredients</h3>
 							<ul>
-								<li>First ingredient</li>
-								<li>Second ingredient</li>
-								<li>Third ingredient</li>
-								<li>...</li>
+								{{#each this.ingredients}}
+									<li>{{this}}</li>
+								{{/each}}
 							</ul>
 						</div>
 					</div>
@@ -347,16 +185,16 @@
 						placeholder="Food Image URL..."
 					/>
 
-					<select name="category">
-						<option selected>Select category...</option>
-						<option selected>Vegetables and legumes/beans</option>
-						<option selected>Fruits</option>
-						<option selected>Grain Food</option>
-						<option selected>Milk, cheese, eggs and alternatives</option>
-						<option selected>Lean meats and poultry, fish and alternatives</option>
+					<select id="share-category" name="category" required>
+						<option value="" disabled selected hidden>Select category...</option>
+						<option>Vegetables and legumes/beans</option>
+						<option>Fruits</option>
+						<option>Grain Food</option>
+						<option>Milk, cheese, eggs and alternatives</option>
+						<option>Lean meats and poultry, fish and alternatives</option>
 					</select>
 
-					<button class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Share it</button>
+					<button id="share-btn" class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Share it</button>
 				</form>
 			</script>
 
