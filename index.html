@@ -40,13 +40,13 @@
 			<!-- NAV BAR - TEMPLATE -->
 			<script id="navbar" type="text/x-handlebars-template">
 				<a id="nav-home" class="nav-link" href="#home">Home</a>
-				<a id="nav-welcome" class="nav-link active" href="#home">Welcome,
+				<a id="nav-welcome" class="nav-link active" href="#home" style="display: none">Welcome,
 					{{firstName}}
 					{{lastName}}!</a>
-				<a id="nav-share" class="nav-link active" href="#share">Share recipe</a>
-				<a id="nav-logout" class="nav-link active" href="#logout">Logout</a>
-				<a id="nav-login" class="nav-link anon" href="#login">Login</a>
-				<a id="nav-register" class="nav-link anon" href="#register">Register</a>
+				<a id="nav-share" class="nav-link active" href="#share" style="display: none">Share recipe</a>
+				<a id="nav-logout" class="nav-link active" href="#logout" style="display: none">Logout</a>
+				<a id="nav-login" class="nav-link anon" href="#login" style="display: none">Login</a>
+				<a id="nav-register" class="nav-link anon" href="#register" style="display: none">Register</a>
 			</script>
 
 			<!-- ANONYMOUS HOME PAGE - TEMPLATE -->
@@ -121,10 +121,10 @@
 							</div>
 							<div class="actions">
 								<!-- CREATOR VIEW -->
-								<a class="btn btn-danger" href="#archive/{{id}}">Archive</a>
-								<a class="btn btn-info" href="#edit/{{id}}">Edit</a>
+								<a id="archive-btn" class="btn btn-danger" href="#archive/{{id}}">Archive</a>
+								<a id="edit-btn" class="btn btn-info" href="#edit/{{id}}">Edit</a>
 								<!-- NON-CREATOR VIEW -->
-								<a class="btn btn-success" href="#"> {{likesCounter}} likes</a>
+								<a id="like-btn" class="btn btn-success" href="#"> {{likesCounter}} likes</a>
 							</div>
 						</div>
 
@@ -187,11 +187,11 @@
 
 					<select id="share-category" name="category" required>
 						<option value="" disabled selected hidden>Select category...</option>
-						<option>Vegetables and legumes/beans</option>
-						<option>Fruits</option>
-						<option>Grain Food</option>
-						<option>Milk, cheese, eggs and alternatives</option>
-						<option>Lean meats and poultry, fish and alternatives</option>
+						<option value="vegetable">Vegetables and legumes/beans</option>
+						<option value="fruit">Fruits</option>
+						<option value="grain">Grain Food</option>
+						<option value="dairy">Milk, cheese, eggs and alternatives</option>
+						<option value="protein">Lean meats and poultry, fish and alternatives</option>
 					</select>
 
 					<button id="share-btn" class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Share it</button>
@@ -271,6 +271,7 @@
 								class="form-control"
 								name="firstName"
 								placeholder="First name"
+								required
 							/>
 						</div>
 						<div class="col">
@@ -280,6 +281,7 @@
 								class="form-control"
 								name="lastName"
 								placeholder="Last name"
+								required
 							/>
 						</div>
 					</div>
@@ -290,6 +292,7 @@
 						class="form-control mb-4"
 						name="username"
 						placeholder="Username"
+						required
 					/>
 					<input
 						type="password"
@@ -297,6 +300,7 @@
 						class="form-control"
 						name="password"
 						placeholder="Password"
+						required
 					/>
 					<hr />
 					<input
@@ -305,8 +309,9 @@
 						class="form-control"
 						name="repeatPassword"
 						placeholder="Repeat Password"
+						required
 					/>
-					<button class="btn btn-danger my-4 btn-block w-25 m-auto" type="submit">Sign up</button>
+					<button id="register-btn" class="btn btn-danger my-4 btn-block w-25 m-auto" type="submit">Sign up</button>
 				</form>
 			</script>
 
@@ -332,7 +337,7 @@
 					/>
 					<hr />
 
-					<button class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Sign in</button>
+					<button id="loginBtn" class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Sign in</button>
 				</form>
 			</script>
 		</div>
@@ -346,7 +351,9 @@
 	<script src="./node_modules/sammy/lib/plugins/sammy.handlebars.js"></script>
 
 	<!--My Libraries-->
+
 	<script src="./scripts/routes.js"></script>
+	<script src="./scripts/helpers.js"></script>
 	<script src="./scripts/server.js"></script>
 
 	<!--????-->
