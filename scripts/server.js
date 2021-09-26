@@ -26,6 +26,7 @@ async function listen() {
 	let currentUser = getSessionUser();
 
 	if (currentHash !== hashRoute) {
+		$(errorBox).hide();
 		$(loadingBox).show();
 
 		if (currentUser !== user) {

@@ -123,9 +123,9 @@ function showError(message) {
 }
 
 function showSuccess(message) {
+	$(errorBox).hide();
 	successBox.innerHTML = message;
 	$(successBox).show();
-	$(errorBox).hide();
 
 	successBox.addEventListener("click", function () {
 		$(successBox).hide();

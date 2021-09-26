@@ -201,11 +201,13 @@ nav a:hover {
 }
 
 img.foodImage {
-	display: inline-block;
+	display: flex;
 	vertical-align: top;
 	max-width: 40%;
 	max-height: 250px;
 	width: auto;
+	margin-right: 10px;
+	float: right;
 }
 
 #foodNotFound {
