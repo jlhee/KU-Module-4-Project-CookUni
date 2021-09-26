@@ -93,18 +93,20 @@ async function login() {
 		let users = await getUsers();
 		let usernames = await getUsernames();
 
-		let username = document.getElementById("defaultRegisterFormUsername").value;
-		let password = document.getElementById("defaultRegisterFormPassword").value;
+		let username = document.getElementById("defaultRegisterFormUsername");
+		let password = document.getElementById("defaultRegisterFormPassword");
 
-		if (usernames.hasOwnProperty(username)) {
+		if (usernames.hasOwnProperty(username.value)) {
 			// username exists
-			let userID = usernames[username];
+			let userID = usernames[username.value];
 			let user = users[userID]; // current user object
-			if (password == user.password) {
+			if (password.value == user.password) {
 				delete user.password;
 				user.id = userID;
 				sessionStorage.setItem("user", JSON.stringify(user));
 				showSuccess("Login successful.");
+				username.value = "";
+				password.value = "";
 			} else {
 				showError("Incorrect password. Please re-enter your password.");
 			}
