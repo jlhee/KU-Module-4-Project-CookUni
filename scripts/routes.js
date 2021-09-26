@@ -3,38 +3,33 @@ async function home(user) {
 	let html;
 
 	if (user != null && user.username != undefined && users.includes(user.username)) {
-		// logged in
-		let recipes = await getRecipes();
+		let recipes = await getRecipe();
 		let recipesArr = Object.values(recipes);
 		let src = document.getElementById("home").innerHTML;
 		let template = Handlebars.compile(src);
 		let context = { recipesArr };
 		html = template(context);
 	} else {
-		// logged out
 		html = document.getElementById("anon-home").innerHTML;
 	}
 	render(html);
+	$(loadingBox).hide();
 }
 
 async function register() {
 	let src = document.getElementById("register").innerHTML;
 	let template = Handlebars.compile(src);
-	let context = {};
-	let html = template(context);
+	let html = template({});
 	render(html);
-
-	let usernames = Object.keys(await getUsernames());
 
 	let nameRE = /^\S{2,}$/;
 	let usernameRE = /^\S{3,}$/;
 	let passwordRE = /^\S{6,}$/;
 
-	let registerBtn = document.getElementById("register-btn");
-
-	registerBtn.addEventListener("click", function (event) {
+	document.getElementById("register-btn").addEventListener("click", async function (event) {
 		event.preventDefault();
 		$(loadingBox).show();
+		let usernames = Object.keys(await getUsernames());
 
 		let firstName = document.getElementById("defaultRegisterFormFirstName").value;
 		let lastName = document.getElementById("defaultRegisterFormLastName").value;
@@ -62,15 +57,10 @@ async function register() {
 				password,
 				loggedIn: true,
 			};
-			let url = "https://cookuni-project-default-rtdb.firebaseio.com/users.json";
-			let headers = {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(user),
-			};
-			fetch(url, headers)
+
+			postUser("POST", JSON.stringify(user))
 				.then((response) => {
-					if ((response.status = 200)) {
+					if (response.status == 200) {
 						return response.json();
 					} else {
 						console.log(response.status);
@@ -80,30 +70,29 @@ async function register() {
 					user.id = data.name;
 					delete user.password;
 					sessionStorage.setItem("user", JSON.stringify(user));
+					showSuccess("User registration successful.");
 				})
 				.catch((err) => {
 					console.log(err);
 				});
-
-			showSuccess("User registration successful. Redirecting to home page...");
 		}
 	});
+
+	$(loadingBox).hide();
 }
 
 async function login() {
 	let src = document.getElementById("login").innerHTML;
 	let template = Handlebars.compile(src);
-	let context = {};
-	let html = template(context);
+	let html = template({});
 	render(html);
 
-	let users = await getUsers();
-	let usernames = await getUsernames();
-	let loginBtn = document.getElementById("loginBtn");
-
-	loginBtn.addEventListener("click", function (event) {
+	document.getElementById("loginBtn").addEventListener("click", async function (event) {
 		event.preventDefault();
 		$(loadingBox).show();
+		let users = await getUsers();
+		let usernames = await getUsernames();
+
 		let username = document.getElementById("defaultRegisterFormUsername").value;
 		let password = document.getElementById("defaultRegisterFormPassword").value;
 
@@ -112,56 +101,110 @@ async function login() {
 			let userID = usernames[username];
 			let user = users[userID]; // current user object
 			if (password == user.password) {
-				// and password matches
 				delete user.password;
 				user.id = userID;
 				sessionStorage.setItem("user", JSON.stringify(user));
-				showSuccess("Login successful. Redirecting to home page...");
+				showSuccess("Login successful.");
 			} else {
-				// wrong password
 				showError("Incorrect password. Please re-enter your password.");
 			}
 		} else {
-			// username does not exist
 			showError("ERROR: Username does not exist.");
 		}
 	});
+
+	$(loadingBox).hide();
 }
 
 function logout() {
-	sessionStorage.removeItem("user");
-	refreshNavBar();
-	render("");
+	sessionStorage.clear();
+	document.getElementById("container").innerHTML = "";
 	showSuccess("Logout successful.");
 }
 
-async function view(recipeID) {
+async function view(recipeID, user) {
 	let src = document.getElementById("view").innerHTML;
 	let template = Handlebars.compile(src);
 	let recipe = await getRecipe(recipeID);
 	let html = template(recipe);
 	render(html);
 
-	let archive = document.getElementById("archive-btn");
-	let edit = document.getElementById("edit-btn");
-	let like = document.getElementById("like-btn");
-
-	if (recipe.creator != getCurrentUser().id) {
-		$(archive).hide();
-		$(edit).hide();
-		like.addEventListener("click", function () {
-			recipe.likesCounter++;
-			postRecipe("PATCH", JSON.stringify(recipe), recipeID);
-			showSuccess("You liked that recipe.");
-		});
+	if (recipe.creator != user.id) {
+		$(document.getElementById("like-btn")).show();
 	} else {
-		$(like).hide();
-		archive.addEventListener("click", function () {
-			// delete from db
-			postRecipe("DELETE", "", recipeID)
+		$(document.getElementById("archive-btn")).show();
+		$(document.getElementById("edit-btn")).show();
+	}
+
+	$(loadingBox).hide();
+}
+
+function archive(recipeID) {
+	postRecipe("DELETE", "", recipeID)
+		.then((response) => {
+			if (response.status == 200) {
+				showSuccess("Your recipe was archived.");
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+}
+
+async function like(recipeID) {
+	let recipe = await getRecipe(recipeID);
+	recipe.likesCounter++;
+	postRecipe("PATCH", JSON.stringify({ likesCounter: recipe.likesCounter }), recipeID)
+		.then((response) => {
+			if (response.status == 200) {
+				showSuccess("You liked that recipe.");
+			}
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+}
+
+async function edit(recipeID) {
+	let src = document.getElementById("edit").innerHTML;
+	let template = Handlebars.compile(src);
+	let recipe = await getRecipe(recipeID);
+	recipe.ingredients = recipe.ingredients.join(", ");
+	let html = template(recipe);
+	render(html);
+
+	let options = document.getElementById("edit-category").children;
+	for (let i in options) {
+		if (options[i].innerText == recipe.category) {
+			options[i].setAttribute("selected", true);
+		}
+	}
+
+	document.getElementById("editBtn").addEventListener("click", function (event) {
+		event.preventDefault();
+		$(loadingBox).show();
+		let meal = document.getElementById("defaultRecepieEditMeal").value;
+		let ingredients = document.getElementById("defaultRecepieEditIngredients").value;
+		let prepMethod = document.getElementById("defaultRecepieEditMethodOfPreparation").value;
+		let description = document.getElementById("defaultRecepieEditDescription").value;
+		let foodImageURL = document.getElementById("defaultRecepieEditFoodImageURL").value;
+		let category = document.getElementById("edit-category");
+		let editedRecipe = recipeValidation(
+			meal,
+			ingredients,
+			prepMethod,
+			description,
+			foodImageURL,
+			category,
+			recipeID,
+			recipe.likesCounter
+		);
+
+		if (editedRecipe) {
+			postRecipe("PATCH", JSON.stringify(editedRecipe), recipeID)
 				.then((response) => {
 					if (response.status == 200) {
-						showSuccess("Your recipe was archived.");
+						showSuccess("Recipe edited successfully!");
 					} else {
 						console.log(response.status);
 					}
@@ -169,27 +212,21 @@ async function view(recipeID) {
 				.catch((err) => {
 					console.log(err);
 				});
-		});
-		edit.addEventListener("click", function () {
-			// TODO: edit(recipeID) display edit page with old recipe info
-		});
-	}
+		}
+	});
+
+	$(loadingBox).hide();
 }
 
 function share() {
 	let src = document.getElementById("share").innerHTML;
 	let template = Handlebars.compile(src);
-	let context = {};
-	let html = template(context);
+	let html = template({});
 	render(html);
-
-	let mealRE = /.{4,}/;
-	let ingRE = /(.+, )+.+/;
-	let prepDescRE = /.{10,}/;
-	let urlRE = /(http|https):\/\/\S+/;
 
 	document.getElementById("share-btn").addEventListener("click", function (event) {
 		event.preventDefault();
+		$(loadingBox).show();
 
 		let meal = document.getElementById("defaultRecepieShareMeal").value;
 		let ingredients = document.getElementById("defaultRecepieShareIngredients").value;
@@ -198,54 +235,19 @@ function share() {
 		let foodImageURL = document.getElementById("defaultRecepieShareFoodImageURL").value;
 		let category = document.getElementById("share-category");
 
-		if (!mealRE.test(meal)) {
-			showError("Invalid Input - Meal name must be at least 4 characters long");
-		} else if (!ingRE.test(ingredients)) {
-			showError(
-				"Invalid Input - Ingredients must have at least 2 items, separated by a comma and space (ingredient1, ingredient2, ingredient3, ...)"
-			);
-		} else if (!prepDescRE.test(prepMethod) || !prepDescRE.test(description)) {
-			showError("Invalid Input - Method of Preperation and Description must be at least 10 characters long");
-		} else if (!urlRE.test(foodImageURL)) {
-			showError("Invalid Input - URL must start with `http://` or 'https://'");
-		} else if (category.value == "") {
-			showError("Please select a category from dropdown list.");
-		} else {
-			let recipe = {
-				meal,
-				ingredients: ingredients.split(", "),
-				prepMethod,
-				description,
-				foodImageURL,
-				category: category.options[category.selectedIndex].innerText,
-				categoryImageURL: categories[category.value],
-				likesCounter: 0,
-				creator: getCurrentUser().id,
-			};
+		let recipe = recipeValidation(meal, ingredients, prepMethod, description, foodImageURL, category);
 
-			console.log(recipe);
-
-			let url = "https://cookuni-project-default-rtdb.firebaseio.com/recipes.json";
-			let headers = {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(recipe),
-			};
-			fetch(url, headers)
+		if (recipe) {
+			postRecipe("POST", JSON.stringify(recipe))
 				.then((response) => {
-					if ((response.status = 200)) {
+					if (response.status == 200) {
 						return response.json();
 					} else {
 						console.log(response.status);
 					}
 				})
 				.then((data) => {
-					let patchHeaders = {
-						method: "PATCH",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({ id: data.name }),
-					};
-					fetch(`https://cookuni-project-default-rtdb.firebaseio.com/recipes/${data.name}.json`, patchHeaders)
+					postRecipe("PATCH", JSON.stringify({ id: data.name }), data.name)
 						.then((response) => {
 							if (response.status == 200) {
 								meal = "";
@@ -268,51 +270,10 @@ function share() {
 				});
 		}
 	});
-}
 
-function edit() {
-	let src = document.getElementById("edit").innerHTML;
-	let template = Handlebars.compile(src);
-	let context = {};
-	let html = template(context);
-	render(html);
+	$(loadingBox).hide();
 }
 
 function render(html) {
 	document.getElementById("container").innerHTML = html;
-}
-
-function refreshNavBar() {
-	let src = document.getElementById("navbar").innerHTML;
-	let template = Handlebars.compile(src);
-	let context = getCurrentUser();
-	document.getElementById("nav").innerHTML = template(context);
-
-	let welcome = document.getElementById("nav-welcome");
-	let share = document.getElementById("nav-share");
-	let logout = document.getElementById("nav-logout");
-	let login = document.getElementById("nav-login");
-	let register = document.getElementById("nav-register");
-
-	if (context == null) {
-		$(login).show();
-		$(register).show();
-
-		if (
-			hashRoute == "#share" ||
-			hashRoute == "logout" ||
-			hashRoute.includes("#edit") ||
-			hashRoute.includes("#view")
-		) {
-			window.location.hash = "#home";
-		}
-	} else {
-		$(welcome).show();
-		$(share).show();
-		$(logout).show();
-
-		if (hashRoute == "#login" || hashRoute == "register") {
-			window.location.hash = "#home";
-		}
-	}
 }

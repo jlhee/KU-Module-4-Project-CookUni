@@ -15,7 +15,16 @@
 			<header class="masthead mb-auto">
 				<div class="inner">
 					<h3 class="masthead-brand">CookUni</h3>
-					<nav id="nav" class="nav nav-masthead justify-content-center"></nav>
+					<nav id="nav" class="nav nav-masthead justify-content-center">
+						<a id="nav-home" class="nav-link" href="#home">Home</a>
+						<a id="nav-welcome" class="nav-link active" href="#home" style="display: none"
+							>Welcome, {{firstName}} {{lastName}}!</a
+						>
+						<a id="nav-share" class="nav-link active" href="#share" style="display: none">Share recipe</a>
+						<a id="nav-logout" class="nav-link active" href="#logout" style="display: none">Logout</a>
+						<a id="nav-login" class="nav-link anon" href="#login" style="display: none">Login</a>
+						<a id="nav-register" class="nav-link anon" href="#register" style="display: none">Register</a>
+					</nav>
 				</div>
 			</header>
 
@@ -38,16 +47,7 @@
 			</footer>
 
 			<!-- NAV BAR - TEMPLATE -->
-			<script id="navbar" type="text/x-handlebars-template">
-				<a id="nav-home" class="nav-link" href="#home">Home</a>
-				<a id="nav-welcome" class="nav-link active" href="#home" style="display: none">Welcome,
-					{{firstName}}
-					{{lastName}}!</a>
-				<a id="nav-share" class="nav-link active" href="#share" style="display: none">Share recipe</a>
-				<a id="nav-logout" class="nav-link active" href="#logout" style="display: none">Logout</a>
-				<a id="nav-login" class="nav-link anon" href="#login" style="display: none">Login</a>
-				<a id="nav-register" class="nav-link anon" href="#register" style="display: none">Register</a>
-			</script>
+			<!-- <script id="welcome" type="text/x-handlebars-template">Welcome, {{firstName}} {{lastName}}!</script> -->
 
 			<!-- ANONYMOUS HOME PAGE - TEMPLATE -->
 			<script id="anon-home" type="text/x-handlebars-template">
@@ -121,10 +121,17 @@
 							</div>
 							<div class="actions">
 								<!-- CREATOR VIEW -->
-								<a id="archive-btn" class="btn btn-danger" href="#archive/{{id}}">Archive</a>
-								<a id="edit-btn" class="btn btn-info" href="#edit/{{id}}">Edit</a>
+								<a
+									id="archive-btn"
+									class="btn btn-danger view-btn"
+									href="#archive/{{id}}"
+									style="display:none"
+								>Archive</a>
+								<a id="edit-btn" class="btn btn-info" href="#edit/{{id}}" style="display:none">Edit</a>
 								<!-- NON-CREATOR VIEW -->
-								<a id="like-btn" class="btn btn-success" href="#"> {{likesCounter}} likes</a>
+								<a id="like-btn" class="btn btn-success" href="#like/{{id}}" style="display:none">
+									{{likesCounter}}
+									likes</a>
 							</div>
 						</div>
 
@@ -209,7 +216,7 @@
 						name="meal"
 						class="form-control mb-4"
 						placeholder="Meal"
-						value=""
+						value="{{meal}}"
 					/>
 
 					<input
@@ -218,7 +225,7 @@
 						name="ingredients"
 						class="form-control mb-4"
 						placeholder="Ingredients"
-						value=""
+						value="{{ingredients}}"
 					/>
 
 					<textarea
@@ -227,7 +234,7 @@
 						name="prepMethod"
 						class="form-control mb-4"
 						placeholder="Method of preparation"
-					></textarea>
+					>{{prepMethod}}</textarea>
 
 					<textarea
 						type="text"
@@ -235,7 +242,7 @@
 						name="description"
 						class="form-control mb-4"
 						placeholder="Description"
-					></textarea>
+					>{{description}}</textarea>
 
 					<input
 						type="text"
@@ -243,18 +250,18 @@
 						name="foodImageURL"
 						class="form-control mb-4"
 						placeholder="Food Image URL..."
-						value=""
+						value="{{foodImageURL}}"
 					/>
 
-					<select name="category" select="">
-						<option selected>Select category...</option>
-						<option>Vegetables and legumes/beans</option>
-						<option>Fruits</option>
-						<option>Grain Food</option>
-						<option>Milk, cheese, eggs and alternatives</option>
-						<option>Lean meats and poultry, fish and alternatives</option>
+					<select id="edit-category" name="category" select="">
+						<option value="">Select category...</option>
+						<option value="vegetable">Vegetables and legumes/beans</option>
+						<option value="fruit">Fruits</option>
+						<option value="grain">Grain Food</option>
+						<option value="dairy">Milk, cheese, eggs and alternatives</option>
+						<option value="protein">Lean meats and poultry, fish and alternatives</option>
 					</select>
-					<button class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Edit it</button>
+					<button id="editBtn" class="btn btn-danger w-25 m-auto my-4 btn-block" type="submit">Edit it</button>
 				</form>
 			</script>
 

@@ -122,7 +122,7 @@ h1 {
 	width: 100%;
 	height: auto;
 	border-bottom: 5px #323233 solid;
-	background: transparent;
+	background: white;
 	text-align: center;
 	border-radius: 10px;
 	overflow: hidden;
@@ -173,7 +173,7 @@ h1 {
 }
 
 .our-team-main:hover .team-front {
-	bottom: -250px;
+	bottom: -300px;
 	transition: all 0.5s ease;
 }
 
@@ -203,7 +203,9 @@ nav a:hover {
 img.foodImage {
 	display: inline-block;
 	vertical-align: top;
-	max-width: 100%;
+	max-width: 40%;
+	max-height: 250px;
+	width: auto;
 }
 
 #foodNotFound {

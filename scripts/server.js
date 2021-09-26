@@ -1,7 +1,13 @@
 let hashRoute;
+let user;
 
-let currentUser;
 let users;
+
+let welcome = document.getElementById("nav-welcome");
+let shareNav = document.getElementById("nav-share");
+let logoutNav = document.getElementById("nav-logout");
+let loginNav = document.getElementById("nav-login");
+let registerNav = document.getElementById("nav-register");
 
 let successBox = document.getElementById("successBox");
 let loadingBox = document.getElementById("loadingBox");
@@ -17,11 +23,30 @@ let categories = {
 
 async function listen() {
 	let currentHash = getCurrentHash();
-	if (currentHash !== hashRoute) {
-		hashRoute = currentHash;
-		currentUser = getCurrentUser();
-		refreshNavBar();
+	let currentUser = getSessionUser();
 
+	if (currentHash !== hashRoute) {
+		$(loadingBox).show();
+
+		if (currentUser !== user) {
+			user = currentUser;
+			if (currentUser == null) {
+				$(welcome).hide();
+				$(shareNav).hide();
+				$(logoutNav).hide();
+				$(loginNav).show();
+				$(registerNav).show();
+			} else {
+				welcome.innerHTML = `Welcome, ${currentUser.firstName} ${currentUser.lastName}!`;
+				$(welcome).show();
+				$(shareNav).show();
+				$(logoutNav).show();
+				$(loginNav).hide();
+				$(registerNav).hide();
+			}
+		}
+
+		hashRoute = currentHash;
 		if (hashRoute == "" || hashRoute == "#home") {
 			home(currentUser);
 		} else if (hashRoute == "#register") {
@@ -34,9 +59,19 @@ async function listen() {
 			share();
 		} else if (hashRoute.includes("view")) {
 			let [, recipeID] = hashRoute.split("/");
-			view(recipeID);
+			view(recipeID, currentUser);
+		} else if (hashRoute.includes("edit")) {
+			let [, recipeID] = hashRoute.split("/");
+			edit(recipeID);
+		} else if (hashRoute.includes("archive")) {
+			let [, recipeID] = hashRoute.split("/");
+			archive(recipeID);
+		} else if (hashRoute.includes("like")) {
+			let [, recipeID] = hashRoute.split("/");
+			like(recipeID);
 		}
 	}
+
 	setTimeout(listen, 200);
 }
 
